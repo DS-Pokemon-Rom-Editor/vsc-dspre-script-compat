@@ -81,22 +81,20 @@ function activate(context) {
 	const hoverProvider = vscode.languages.registerHoverProvider('pokemon_ds_script', {
         provideHover(document, position) {
 	
-			const wordRange = document.getWordRangeAtPosition(position, /\b(Function#\d+|Script#\d+|Action#\d+)\b/);
-            if (!wordRange) return;
+            const numberRange = document.getWordRangeAtPosition(position, /\b(?:0x[0-9A-Fa-f]+|\d+(\.\d+)?)\b/)
+            if (!numberRange) return;
 
-            const word = document.getText(wordRange);
+            const number = document.getText(numberRange);
 
-            const regex = /\b(Function#(\d+)|Script#(\d+)|Action#(\d+))\b/;
-            const match = word.match(regex);
-            if (match) {
-                const referencedNumber = match[2] || match[3] || match[4];
-                const refType = match[1];
 
-                const refFile = resolveFilePath(document.uri.fsPath, referencedNumber, refType);
-                if (refFile) {
-                    return new vscode.Hover(`Go to ${refType}`);
-					
+            if(number) {
+                const regHex = new RegExp(/0x[a-fA-F0-9]+/)
+                if(regHex.test(number)) {
+                    return new vscode.Hover(`Decimal for ${number}: ${hexToDecimal(number)}`)
+                } else {
+                    return new vscode.Hover(`Hex for ${number}: 0x${decimalToHex(number)}`)
                 }
+
             }
         }
     });
@@ -118,26 +116,13 @@ function activate(context) {
 	context.subscriptions.push(disposable, fileOpenListener, hoverProvider, provider, symbol, changeFileCommand, completionProvider, statusBarItem);
 }
 
-function openOrFocusFile(filePath) {
-    // Get all the open editors in VSCode
-    const openEditors = vscode.window.visibleTextEditors;
-
-    // Check if the file is already open
-    const alreadyOpen = openEditors.find(editor => editor.document.uri.fsPath === filePath);
-
-    if (alreadyOpen) {
-        // If the file is already open, focus on it
-        vscode.window.showTextDocument(alreadyOpen.document);
-    } else {
-        // If the file is not open, open it
-        vscode.workspace.openTextDocument(filePath).then(document => {
-            vscode.window.showTextDocument(document);
-        });
-    }
+function hexToDecimal(hex) {
+    return parseInt(hex, 16);
 }
 
-
-
+function decimalToHex(decimal) {
+    return Number(decimal).toString(16).toUpperCase();
+  }
 
 async function closeAllEditors() {
     await vscode.commands.executeCommand('workbench.action.closeAllEditors');
