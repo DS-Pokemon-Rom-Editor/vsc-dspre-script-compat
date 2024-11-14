@@ -13,6 +13,18 @@
             }
         },
         {
+            "scope": "entity.name.action.pokemon_ds_script",
+            "settings": {
+                "foreground": "#8edb61"
+            }
+        },
+        {
+            "scope": "entity.name.func.pokemon_ds_script",
+            "settings": {
+                "foreground": "#8f56a0"
+            }
+        },
+        {
             "scope": "constant.numeric.pokemon_ds_script", // Yellow
             "settings": {
                 "foreground": "#dbdb17"

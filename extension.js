@@ -48,7 +48,7 @@ function activate(context) {
     
                         let targetLine = null;
                         
-                        for (let line = 1; line < targetDocument.lineCount; line++) {
+                        for (let line = 0; line < targetDocument.lineCount; line++) {
                             const lineText = targetDocument.lineAt(line).text;
                             if (targetLabelRegex.test(lineText)) {
                                 targetLine = line;
@@ -62,10 +62,10 @@ function activate(context) {
 
                             const link = new vscode.DocumentLink(
                                 new vscode.Range(startPosition, endPosition),
-                                vscode.Uri.file(refFile)
+                                vscode.Uri.file(refFile).with({fragment: `L${targetLine+1},0`})
                             );
     
-                            link.tooltip = `Go to ${refType} in ${refFile}, line ${targetLine}`;
+                            link.tooltip = `Go to ${refType} in ${refFile}, line ${targetLine+1}`;
     
                             links.push(link);
                         }
@@ -106,12 +106,10 @@ function activate(context) {
 
     let changeFileCommand = vscode.commands.registerCommand('json-autocompletion.changeFile', changeFile);
 
-    // Register the completion provider for JavaScript files
     let completionProvider = vscode.languages.registerCompletionItemProvider('javascript', {
         provideCompletionItems
-    }, '.'); // Trigger autocompletion on '.'
+    }, '.'); 
 
-    // Initialize the status bar item
     updateStatusBar();
 
 
@@ -182,7 +180,6 @@ function resolveFilePath(currentFilePath, referencedNumber, refType) {
 
     let refFile;
 	refType = refType.split('#')[0];
-	console.log(refType)
     if (refType === 'Function') {
         refFile = `${baseNumber}_func.script`; 
     } else if (refType === 'Script') {
@@ -262,8 +259,6 @@ function changeFile() {
     });
 }
 
-
-
 /*
     OUTLINE
 */
@@ -317,7 +312,6 @@ class PokemonDSScriptSymbolProvider {
         return symbols;
     }
 }
-
 
 
 // This method is called when your extension is deactivated

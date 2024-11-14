@@ -3,7 +3,15 @@
     "patterns": [
         {
             "name": "entity.name.control.pokemon_ds_script",
-            "match": "\\b(Script|Function|Action|End|Return)\\b"
+            "match": "\\b(Script|End|Return)\\b"
+        },
+        {
+            "name": "entity.name.func.pokemon_ds_script",
+            "match": "\\b(Function)\\b"
+        },
+        {
+            "name": "entity.name.action.pokemon_ds_script",
+            "match": "\\b(Action)\\b"
         },
         {
             "name": "constant.numeric.pokemon_ds_script", 
