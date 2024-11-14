@@ -1,0 +1,4 @@
+{
+    "keywords": ["Script", "Action", "Function", "End"],
+    "methods": ["CompareVarValue", "JumpIf", "Jump"]
+  }

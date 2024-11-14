@@ -19,6 +19,10 @@
     "commands": [{
       "command": "extension.openFileAtLine",
       "title": "Open File at Line"
+      },
+      {
+        "command": "json-autocompletion.changeFile",
+        "title": "Change Autocomplete File"
       }
     ],  
     "languages": [
@@ -43,6 +47,17 @@
             "path": "./themes/PokemonDSScript-color-theme.json"
         }
     ]
+  },
+  "configuration": {
+    "type": "object",
+    "properties": {
+      "json-autocompletion.file": {
+        "type": "string",
+        "default": "scrcmd-hgss.json",
+        "description": "Select the JSON file for autocompletion.",
+        "enum": ["scrcmd-hgss.json", "scrcmd-plat.json", "scrcmd-dp.json"]
+      }
+    }
   },
   "scripts": {
     "lint": "eslint .",

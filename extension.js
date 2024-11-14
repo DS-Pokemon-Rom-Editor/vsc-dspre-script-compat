@@ -2,9 +2,10 @@ const vscode = require('vscode');
 const fs = require('fs');
 const path = require('path');
 
-/**
- * @param {vscode.ExtensionContext} context
- */
+
+let currentFile = 'scrcmd-hgss.json'; // Default file
+
+
 function activate(context) {
 
 	console.log('DSPRE Script Support activated');
@@ -13,7 +14,6 @@ function activate(context) {
         const filePath = document.fileName;
         const fileName = path.basename(filePath);
 
-        // Check if the opened file matches the naming convention
         const match = fileName.match(/^(\d{4})_(script|action|func)\b/);
         if (match) {
             const prefix = match[1];
@@ -35,24 +35,19 @@ function activate(context) {
                 const regex = /\b(Function#(\d+)|Script#(\d+)|Action#(\d+))\b/g;
                 let match;
     
-                // Search for references like Function#3, Script#3, Action#3 in the document
                 while ((match = regex.exec(text)) !== null) {
-                    const referencedNumber = match[2] || match[3] || match[4]; // Get the reference number
-                    const refType = match[1]; // The type (Function, Script, Action)
+                    const referencedNumber = match[2] || match[3] || match[4];
+                    const refType = match[1]; 
                     
-                    // Resolve the target file path based on the reference
                     const refFile = resolveFilePath(document.uri.fsPath, referencedNumber, refType);
                     
                     if (refFile) {
-                        // Open the target file to search for the exact line of the reference
                         const targetDocument = await vscode.workspace.openTextDocument(refFile);
     
-                        // Construct the label format to search in the target file
                         const targetLabelRegex = new RegExp(`^\\s*${refType.replace('#', ' ')}:`, 'i');
     
                         let targetLine = null;
                         
-                        // Loop through each line in the target document to find the reference line
                         for (let line = 1; line < targetDocument.lineCount; line++) {
                             const lineText = targetDocument.lineAt(line).text;
                             if (targetLabelRegex.test(lineText)) {
@@ -61,9 +56,7 @@ function activate(context) {
                             }
                         }
     
-                        // Only add the link if the target line was found
                         if (targetLine !== null) {
-                            // Create a document link pointing to the found line in the target file
                             const startPosition = document.positionAt(match.index);
                             const endPosition = document.positionAt(match.index + match[0].length);
 
@@ -72,10 +65,8 @@ function activate(context) {
                                 vscode.Uri.file(refFile)
                             );
     
-                            // Set tooltip for clarity (optional)
                             link.tooltip = `Go to ${refType} in ${refFile}, line ${targetLine}`;
     
-                            // Add the link to the list
                             links.push(link);
                         }
                     }
@@ -96,11 +87,9 @@ function activate(context) {
             const regex = /\b(Function#(\d+)|Script#(\d+)|Action#(\d+))\b/;
             const match = word.match(regex);
             if (match) {
-				//console.log("match: ", match)
-                const referencedNumber = match[2] || match[3] || match[4]; // Number after Function#, Script#, or Action#
-                const refType = match[1]; // Type (Function, Script, Action)
+                const referencedNumber = match[2] || match[3] || match[4];
+                const refType = match[1];
 
-                // Resolve file path for the reference
                 const refFile = resolveFilePath(document.uri.fsPath, referencedNumber, refType);
                 if (refFile) {
                     return new vscode.Hover(`Go to ${refType}`);
@@ -113,11 +102,23 @@ function activate(context) {
     const symbol = vscode.languages.registerDocumentSymbolProvider(
         { scheme: 'file', language: 'pokemon_ds_script' },
         new PokemonDSScriptSymbolProvider()
-    )
+    );
+
+    let changeFileCommand = vscode.commands.registerCommand('json-autocompletion.changeFile', changeFile);
+
+    // Register the completion provider for JavaScript files
+    let completionProvider = vscode.languages.registerCompletionItemProvider('javascript', {
+        provideCompletionItems
+    }, '.'); // Trigger autocompletion on '.'
+
+    // Initialize the status bar item
+    updateStatusBar();
 
 
-	context.subscriptions.push(disposable, fileOpenListener, hoverProvider, provider, symbol);
+	context.subscriptions.push(disposable, fileOpenListener, hoverProvider, provider, symbol, changeFileCommand, completionProvider, statusBarItem);
 }
+
+
 
 async function closeAllEditors() {
     await vscode.commands.executeCommand('workbench.action.closeAllEditors');
@@ -147,14 +148,13 @@ async function openMatchingFilesSideBySide(prefix) {
         return 0;
     });
 
-    let column = vscode.ViewColumn.One; // Start with the first column
+    let column = vscode.ViewColumn.One;
     for (const file of files) {
         const fileUri = vscode.Uri.file(file);
         await vscode.workspace.openTextDocument(fileUri).then(doc => {
             vscode.window.showTextDocument(doc, { viewColumn: column, preview: false });
         });
         
-        // Move to the next column, cycling through the first 3 columns
         column = column === vscode.ViewColumn.Three ? vscode.ViewColumn.One : column + 1;
     }
 }
@@ -176,38 +176,97 @@ async function findFilesWithPrefix(dir, prefix) {
     return matchingFiles;
 }
 
-
 function resolveFilePath(currentFilePath, referencedNumber, refType) {
     const fileName = path.basename(currentFilePath);
-    const baseNumber = fileName.split('_')[0]; // Extract base number (e.g., 0000 from 0000_script.script)
-
-    // Determine the file extension and reference type
-
-	//let type =  refType.split("#")[0];
+    const baseNumber = fileName.split('_')[0];
 
     let refFile;
 	refType = refType.split('#')[0];
 	console.log(refType)
     if (refType === 'Function') {
-        refFile = `${baseNumber}_func.script`; // Function references are in .script files
+        refFile = `${baseNumber}_func.script`; 
     } else if (refType === 'Script') {
-        refFile = `${baseNumber}_script.script`; // Script references are in .script files
+        refFile = `${baseNumber}_script.script`;
     } else if (refType === 'Action') {
-        refFile = `${baseNumber}_action.action`; // Action references are in .action files
+        refFile = `${baseNumber}_action.action`;
     } else {
         return null;
     }
 
-    // Resolve the full file path
     const filePath = path.join(vscode.workspace.rootPath, refFile);
 
-    // Check if the file exists in the workspace
     if (fs.existsSync(filePath)) {
         return filePath;
     }
 
-    return null; // Return null if the file doesn't exist
+    return null;
 }
+
+/*
+    AUTOCOMPLETE
+*/
+
+let statusBarItem;
+
+function updateStatusBar() {
+    if (statusBarItem) {
+        statusBarItem.dispose(); // Dispose previous item if it exists
+    }
+
+    // Create a new status bar item
+    statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    statusBarItem.text = `Autocompletion: ${currentFile}`;
+    statusBarItem.command = 'json-autocompletion.changeFile'; // Command to open file picker
+    statusBarItem.show();
+}
+
+function getSuggestions(input) {
+    const filePath = path.join(__dirname, currentFile);
+    let data;
+    try {
+        data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch (err) {
+        vscode.window.showErrorMessage(`Failed to load ${currentFile}: ${err.message}`);
+        return [];
+    }
+
+    // Look for keywords or methods matching the input
+    let suggestions = [];
+    Object.keys(data).forEach(key => {
+        suggestions = suggestions.concat(data[key].filter(item => item.startsWith(input)));
+    });
+
+    return suggestions;
+}
+
+// Provide autocompletion
+function provideCompletionItems(document, position) {
+    const input = document.getText(document.getWordRangeAtPosition(position));
+    const suggestions = getSuggestions(input);
+
+    return suggestions.map(suggestion => {
+        return new vscode.CompletionItem(suggestion, vscode.CompletionItemKind.Keyword);
+    });
+}
+
+// Command to change the autocompletion JSON file
+function changeFile() {
+    vscode.window.showQuickPick(['scrcmd-hgss.json', 'scrcmd-plat.json', 'scrcmd-dp.json'], {
+        placeHolder: 'Select the JSON file for autocompletion'
+    }).then(selection => {
+        if (selection) {
+            currentFile = selection;
+            vscode.window.showInformationMessage(`Autocompletion file changed to ${currentFile}`);
+            updateStatusBar();
+        }
+    });
+}
+
+
+
+/*
+    OUTLINE
+*/
 
 class PokemonDSScriptSymbolProvider {
     provideDocumentSymbols(document) {
@@ -234,7 +293,6 @@ class PokemonDSScriptSymbolProvider {
                     )
                 );
             } else if ((match = functionRegex.exec(lineText))) {
-                // Add a Function symbol
                 symbols.push(
                     new vscode.DocumentSymbol(
                         `Function ${match[1]}`,
@@ -245,7 +303,6 @@ class PokemonDSScriptSymbolProvider {
                     )
                 );
             } else if ((match = actionRegex.exec(lineText))) {
-                // Add an Action symbol
                 symbols.push(
                     new vscode.DocumentSymbol(
                         `Action ${match[1]}`,
