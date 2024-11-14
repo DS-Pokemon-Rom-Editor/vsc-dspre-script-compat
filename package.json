@@ -28,8 +28,8 @@
         "title": "Change Autocomplete File"
       },
       {
-        "command": "extension.handleLinkClick",
-        "title": "Click Handler"
+        "command": "extension.changeTheme",
+        "title": "Change colors to the Pokemon DS Script Theme"
       }
     ],  
     "languages": [
@@ -82,6 +82,11 @@
         "default": "scrcmd-hgss.json",
         "description": "Select the JSON file for autocompletion.",
         "enum": ["scrcmd-hgss.json", "scrcmd-plat.json", "scrcmd-dp.json"]
+      },
+      "extension.Theme": {
+        "type": "string",
+        "default": "Change Theme",
+        "description": "Change the current theme to get the right colors for the Pokemon DS Script"
       }
     }
   },

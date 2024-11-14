@@ -27,93 +27,106 @@ function activate(context) {
 		vscode.window.showInformationMessage('Hello World from DSPRE-Script-Support!');
 	});
 
-    const provider = vscode.languages.registerDocumentLinkProvider(
-        { scheme: 'file', language: 'pokemon_ds_script' },
-        {
-            async provideDocumentLinks(document) {
-                const links = [];
-                const text = document.getText();
-                const regex = /\b(Function#(\d+)|Script#(\d+)|Action#(\d+))\b/g;
-                let match;
-    
-                while ((match = regex.exec(text)) !== null) {
-                    const referencedNumber = match[2] || match[3] || match[4];
-                    const refType = match[1]; 
-                    
-                    const refFile = resolveFilePath(document.uri.fsPath, referencedNumber, refType);
-                    
-                    if (refFile) {
-                        const targetDocument = await vscode.workspace.openTextDocument(refFile);
-    
-                        const targetLabelRegex = new RegExp(`^\\s*${refType.replace('#', ' ')}:`, 'i');
-    
-                        let targetLine = null;
+       const provider = vscode.languages.registerDocumentLinkProvider(
+            { scheme: 'file', language: 'pokemon_ds_script' },
+            {
+                async provideDocumentLinks(document) {
+                    const links = [];
+                    const text = document.getText();
+                    const regex = /\b(Function#(\d+)|Script#(\d+)|Action#(\d+))\b/g;
+                    let match;
+        
+                    while ((match = regex.exec(text)) !== null) {
+                        const referencedNumber = match[2] || match[3] || match[4];
+                        const refType = match[1]; 
                         
-                        for (let line = 0; line < targetDocument.lineCount; line++) {
-                            const lineText = targetDocument.lineAt(line).text;
-                            if (targetLabelRegex.test(lineText)) {
-                                targetLine = line;
-                                break;
+                        const refFile = resolveFilePath(document.uri.fsPath, referencedNumber, refType);
+                        
+                        if (refFile) {
+                            const targetDocument = await vscode.workspace.openTextDocument(refFile);
+        
+                            const targetLabelRegex = new RegExp(`^\\s*${refType.replace('#', ' ')}:`, 'i');
+        
+                            let targetLine = null;
+                            
+                            for (let line = 0; line < targetDocument.lineCount; line++) {
+                                const lineText = targetDocument.lineAt(line).text;
+                                if (targetLabelRegex.test(lineText)) {
+                                    targetLine = line;
+                                    break;
+                                }
+                            }
+        
+                            if (targetLine !== null) {
+                                const startPosition = document.positionAt(match.index);
+                                const endPosition = document.positionAt(match.index + match[0].length);
+
+                                const link = new vscode.DocumentLink(
+                                    new vscode.Range(startPosition, endPosition),
+                                    vscode.Uri.file(refFile).with({fragment: `L${targetLine+1},0`})
+                                );
+                        
+                                link.tooltip = `Go to ${refType} in ${refFile}, line ${targetLine+1}`;
+        
+                                links.push(link);
                             }
                         }
-    
-                        if (targetLine !== null) {
-                            const startPosition = document.positionAt(match.index);
-                            const endPosition = document.positionAt(match.index + match[0].length);
-
-                            const link = new vscode.DocumentLink(
-                                new vscode.Range(startPosition, endPosition),
-                                vscode.Uri.file(refFile).with({fragment: `L${targetLine+1},0`})
-                            );
-
-                    
-                            link.tooltip = `Go to ${refType} in ${refFile}, line ${targetLine+1}`;
-    
-                            links.push(link);
-                        }
                     }
+                    return links;
                 }
-                return links;
             }
-        }
     );
 
-	const hoverProvider = vscode.languages.registerHoverProvider('pokemon_ds_script', {
-        provideHover(document, position) {
-	
-            const numberRange = document.getWordRangeAtPosition(position, /\b(?:0x[0-9A-Fa-f]+|\d+(\.\d+)?)\b/)
-            if (!numberRange) return;
+        const hoverProvider = vscode.languages.registerHoverProvider('pokemon_ds_script', {
+            provideHover(document, position) {
+        
+                const numberRange = document.getWordRangeAtPosition(position, /\b(?:0x[0-9A-Fa-f]+|\d+(\.\d+)?)\b/)
+                if (!numberRange) return;
 
-            const number = document.getText(numberRange);
+                const number = document.getText(numberRange);
 
 
-            if(number) {
-                const regHex = new RegExp(/0x[a-fA-F0-9]+/)
-                if(regHex.test(number)) {
-                    return new vscode.Hover(`Decimal for ${number}: ${hexToDecimal(number)}`)
-                } else {
-                    return new vscode.Hover(`Hex for ${number}: 0x${decimalToHex(number)}`)
+                if(number) {
+                    const regHex = new RegExp(/0x[a-fA-F0-9]+/)
+                    if(regHex.test(number)) {
+                        return new vscode.Hover(`Decimal for ${number}: ${hexToDecimal(number)}`)
+                    } else {
+                        return new vscode.Hover(`Hex for ${number}: 0x${decimalToHex(number)}`)
+                    }
+
                 }
-
             }
-        }
-    });
+        });
 
-    const symbol = vscode.languages.registerDocumentSymbolProvider(
-        { scheme: 'file', language: 'pokemon_ds_script' },
-        new PokemonDSScriptSymbolProvider()
-    );
+        const symbol = vscode.languages.registerDocumentSymbolProvider(
+            { scheme: 'file', language: 'pokemon_ds_script' },
+            new PokemonDSScriptSymbolProvider()
+        );
 
-    let changeFileCommand = vscode.commands.registerCommand('json-autocompletion.changeFile', changeFile);
+        let changeFileCommand = vscode.commands.registerCommand('json-autocompletion.changeFile', changeFile);
 
-    let completionProvider = vscode.languages.registerCompletionItemProvider('javascript', {
-        provideCompletionItems
-    }, '.'); 
+        const changeThemeCommand = vscode.commands.registerCommand('extension.changeTheme', async () => {
+            // Define the theme name you want to set
+            const themeName = "Custom Script Theme";
+        
+            // Update the color theme setting
+            await vscode.workspace.getConfiguration().update(
+              'workbench.colorTheme',
+              themeName,
+              vscode.ConfigurationTarget.Workspace
+            );
+        
+            vscode.window.showInformationMessage(`Theme changed to ${themeName}`);
+          });
 
-    updateStatusBar();
+        let completionProvider = vscode.languages.registerCompletionItemProvider('javascript', {
+            provideCompletionItems
+        }, '.'); 
+
+        updateStatusBar();
 
 
-	context.subscriptions.push(disposable, fileOpenListener, hoverProvider, provider, symbol, changeFileCommand, completionProvider, statusBarItem);
+	    context.subscriptions.push(disposable, fileOpenListener, hoverProvider, provider, symbol, changeFileCommand, completionProvider, statusBarItem, changeThemeCommand);
 }
 
 function hexToDecimal(hex) {
@@ -210,10 +223,12 @@ function resolveFilePath(currentFilePath, referencedNumber, refType) {
 */
 
 let statusBarItem;
+let statusBarItem2;
 
 function updateStatusBar() {
     if (statusBarItem) {
         statusBarItem.dispose(); // Dispose previous item if it exists
+        statusBarItem2.dispose();
     }
 
     // Create a new status bar item
@@ -221,6 +236,12 @@ function updateStatusBar() {
     statusBarItem.text = `Autocompletion: ${currentFile}`;
     statusBarItem.command = 'json-autocompletion.changeFile'; // Command to open file picker
     statusBarItem.show();
+    
+
+    statusBarItem2 = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    statusBarItem2.text = "Pokemon DS Script Colors";
+    statusBarItem2.command = "extension.changeTheme";
+    statusBarItem2.show();
 }
 
 function getSuggestions(input) {
