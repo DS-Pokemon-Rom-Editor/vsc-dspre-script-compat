@@ -16,29 +16,53 @@
   ],
   "main": "./extension.js",
   "contributes": {
-    "commands": [{
+    "commands": [
+      {
       "command": "extension.openFileAtLine",
       "title": "Open File at Line"
       },
       {
         "command": "json-autocompletion.changeFile",
         "title": "Change Autocomplete File"
+      },
+      {
+        "command": "extension.handleLinkClick",
+        "title": "Click Handler"
       }
     ],  
     "languages": [
         {
             "id": "pokemon_ds_script",
             "aliases": ["Pokemon DS Script", "pokemon_ds_script"],
-            "extensions": [".script", ".action"],
-            "configuration": "./language-configuration.json"
-        }
+            "extensions": [".script"],
+            "configuration": "./language-configuration.json",
+            "icon": {
+              "light": "./resources/icons/script.png",
+              "dark": "./resources/icons/script.png"
+            }
+        },
+        {
+          "id": "pokemon_ds_action",
+          "aliases": ["Pokemon DS Action", "pokemon_ds_action"],
+          "extensions": [".action"],
+          "configuration": "./language-configuration.json",
+          "icon": {
+            "light": "./resources/icons/action.png",
+            "dark": "./resources/icons/action.png"
+          }
+      }
     ],
     "grammars": [
         {
             "language": "pokemon_ds_script",
             "scopeName": "source.pokemon_ds_script",
             "path": "./syntaxes/PokemonDSScript.tmLanguage.json"
-        }
+        },
+        {
+          "language": "pokemon_ds_action",
+          "scopeName": "source.pokemon_ds_script",
+          "path": "./syntaxes/PokemonDSScript.tmLanguage.json"
+      }
     ],
     "themes": [
         {

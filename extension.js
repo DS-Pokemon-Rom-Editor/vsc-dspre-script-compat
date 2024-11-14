@@ -10,6 +10,7 @@ function activate(context) {
 
 	console.log('DSPRE Script Support activated');
 
+
 	const fileOpenListener = vscode.workspace.onDidOpenTextDocument(async (document) => {
         const filePath = document.fileName;
         const fileName = path.basename(filePath);
@@ -64,7 +65,8 @@ function activate(context) {
                                 new vscode.Range(startPosition, endPosition),
                                 vscode.Uri.file(refFile).with({fragment: `L${targetLine+1},0`})
                             );
-    
+
+                    
                             link.tooltip = `Go to ${refType} in ${refFile}, line ${targetLine+1}`;
     
                             links.push(link);
@@ -115,6 +117,25 @@ function activate(context) {
 
 	context.subscriptions.push(disposable, fileOpenListener, hoverProvider, provider, symbol, changeFileCommand, completionProvider, statusBarItem);
 }
+
+function openOrFocusFile(filePath) {
+    // Get all the open editors in VSCode
+    const openEditors = vscode.window.visibleTextEditors;
+
+    // Check if the file is already open
+    const alreadyOpen = openEditors.find(editor => editor.document.uri.fsPath === filePath);
+
+    if (alreadyOpen) {
+        // If the file is already open, focus on it
+        vscode.window.showTextDocument(alreadyOpen.document);
+    } else {
+        // If the file is not open, open it
+        vscode.workspace.openTextDocument(filePath).then(document => {
+            vscode.window.showTextDocument(document);
+        });
+    }
+}
+
 
 
 
