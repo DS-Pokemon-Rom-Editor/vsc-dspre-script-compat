@@ -1,18 +1,13 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 const fs = require('fs');
 const path = require('path');
-
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
 
-	console.log('Congratulations, your extension "dspre-script-support" is now active!');
+	console.log('DSPRE Script Support activated');
 
 	const fileOpenListener = vscode.workspace.onDidOpenTextDocument(async (document) => {
         const filePath = document.fileName;
@@ -32,7 +27,7 @@ function activate(context) {
 	});
 
     const provider = vscode.languages.registerDocumentLinkProvider(
-        { scheme: 'file', language: 'customscript' },
+        { scheme: 'file', language: 'pokemon_ds_script' },
         {
             async provideDocumentLinks(document) {
                 const links = [];
@@ -90,7 +85,7 @@ function activate(context) {
         }
     );
 
-	const hoverProvider = vscode.languages.registerHoverProvider('customscript', {
+	const hoverProvider = vscode.languages.registerHoverProvider('pokemon_ds_script', {
         provideHover(document, position) {
 	
 			const wordRange = document.getWordRangeAtPosition(position, /\b(Function#\d+|Script#\d+|Action#\d+)\b/);
@@ -116,8 +111,8 @@ function activate(context) {
     });
 
     const symbol = vscode.languages.registerDocumentSymbolProvider(
-        { scheme: 'file', language: 'customscript' },
-        new CustomScriptSymbolProvider()
+        { scheme: 'file', language: 'pokemon_ds_script' },
+        new PokemonDSScriptSymbolProvider()
     )
 
 
@@ -214,7 +209,7 @@ function resolveFilePath(currentFilePath, referencedNumber, refType) {
     return null; // Return null if the file doesn't exist
 }
 
-class CustomScriptSymbolProvider {
+class PokemonDSScriptSymbolProvider {
     provideDocumentSymbols(document) {
         const symbols = [];
         const text = document.getText();

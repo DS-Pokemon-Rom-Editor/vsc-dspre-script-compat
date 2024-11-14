@@ -23,24 +23,24 @@
     ],  
     "languages": [
         {
-            "id": "customscript",
-            "aliases": ["Custom Script", "customscript"],
+            "id": "pokemon_ds_script",
+            "aliases": ["Pokemon DS Script", "pokemon_ds_script"],
             "extensions": [".script", ".action"],
             "configuration": "./language-configuration.json"
         }
     ],
     "grammars": [
         {
-            "language": "customscript",
-            "scopeName": "source.customscript",
-            "path": "./syntaxes/customScript.tmLanguage.json"
+            "language": "pokemon_ds_script",
+            "scopeName": "source.pokemon_ds_script",
+            "path": "./syntaxes/PokemonDSScript.tmLanguage.json"
         }
     ],
     "themes": [
         {
             "label": "Custom Script Theme",
             "uiTheme": "vs-dark", 
-            "path": "./themes/customScript-color-theme.json"
+            "path": "./themes/PokemonDSScript-color-theme.json"
         }
     ]
   },

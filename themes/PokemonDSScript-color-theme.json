@@ -7,43 +7,43 @@
     },
     "tokenColors": [
         {
-            "scope": "entity.name.control.customscript", // Orange
+            "scope": "entity.name.control.pokemon_ds_script", // Orange
             "settings": {
                 "foreground": "#d69825"
             }
         },
         {
-            "scope": "constant.numeric.customscript", // Yellow
+            "scope": "constant.numeric.pokemon_ds_script", // Yellow
             "settings": {
                 "foreground": "#dbdb17"
             }
         },
         {
-            "scope": "constant.numeric.prefixed.customscript", // Green
+            "scope": "constant.numeric.prefixed.pokemon_ds_script", // Green
             "settings": {
                 "foreground": "#257c25"
             }
         },
         {
-            "scope": "keyword.operator.customscript", // Comparison keywords
+            "scope": "keyword.operator.pokemon_ds_script", // Comparison keywords
             "settings": {
                 "foreground": "#d69825"
             }
         },
         {
-            "scope": "support.function.cmd.customscript", // CMD_ commands
+            "scope": "support.function.cmd.pokemon_ds_script", // CMD_ commands
             "settings": {
                 "foreground": "#FFFFFF" // White
             }
         },
         {
-            "scope": "text.other.customscript", // Blue
+            "scope": "text.other.pokemon_ds_script", // Blue
             "settings": {
                 "foreground": "#7391d3"
             }
         },
         {
-            "scope": "comment.line.double-slash.customscript", // White for comments starting with ##
+            "scope": "comment.line.double-slash.pokemon_ds_script", // White for comments starting with ##
             "settings": {
                 "foreground": "#bdbdbd"
             }
