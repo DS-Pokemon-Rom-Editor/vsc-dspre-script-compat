@@ -27,3 +27,7 @@ Initial release
 ### 1.0.1
 
 - Added tooltip on hover to convert Hex to Dec, and Dec to Hex
+
+### 1.0.2
+
+- Added button to switch theme color in case their not good
