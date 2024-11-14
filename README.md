@@ -31,3 +31,11 @@ Initial release
 ### 1.0.2
 
 - Added button to switch theme color in case their not good
+
+### 1.0.3
+
+- Added button to disable the multiple file opening
+
+### 1.0.4
+
+- Fixed a bug where Action files couldn't parse the outlines

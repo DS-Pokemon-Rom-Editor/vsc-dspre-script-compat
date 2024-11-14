@@ -3,7 +3,7 @@
   "displayName": "DSPRE-Script-Support",
   "publisher": "CorentinMace",
   "description": "",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -30,6 +30,10 @@
       {
         "command": "extension.changeTheme",
         "title": "Change colors to the Pokemon DS Script Theme"
+      },
+      {
+        "command": "extension.multipleFileOpening",
+        "title": "Enable or Disable the automatic multiple file opening"
       }
     ],  
     "languages": [

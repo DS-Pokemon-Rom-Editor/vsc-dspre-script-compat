@@ -4,6 +4,7 @@ const path = require('path');
 
 
 let currentFile = 'scrcmd-hgss.json'; // Default file
+let multipleFileOpening = true;
 
 
 function activate(context) {
@@ -12,6 +13,7 @@ function activate(context) {
 
 
 	const fileOpenListener = vscode.workspace.onDidOpenTextDocument(async (document) => {
+        if(!multipleFileOpening) return;
         const filePath = document.fileName;
         const fileName = path.basename(filePath);
 
@@ -99,11 +101,16 @@ function activate(context) {
         });
 
         const symbol = vscode.languages.registerDocumentSymbolProvider(
-            { scheme: 'file', language: 'pokemon_ds_script' },
+            { scheme: 'file', languages: ['pokemon_ds_script', 'pokemon_ds_action'] },
             new PokemonDSScriptSymbolProvider()
         );
 
         let changeFileCommand = vscode.commands.registerCommand('json-autocompletion.changeFile', changeFile);
+
+        let multipleFileOpeningCommand = vscode.commands.registerCommand('extension.multipleFileOpening', function() {
+            multipleFileOpening = !multipleFileOpening;
+            updateStatusBar();
+        });
 
         const changeThemeCommand = vscode.commands.registerCommand('extension.changeTheme', async () => {
             // Define the theme name you want to set
@@ -126,7 +133,7 @@ function activate(context) {
         updateStatusBar();
 
 
-	    context.subscriptions.push(disposable, fileOpenListener, hoverProvider, provider, symbol, changeFileCommand, completionProvider, statusBarItem, changeThemeCommand);
+	    context.subscriptions.push(disposable, fileOpenListener, hoverProvider, provider, symbol, changeFileCommand, completionProvider, statusBarItem, changeThemeCommand, multipleFileOpeningCommand);
 }
 
 function hexToDecimal(hex) {
@@ -224,11 +231,14 @@ function resolveFilePath(currentFilePath, referencedNumber, refType) {
 
 let statusBarItem;
 let statusBarItem2;
+let statusBarItem3;
+
 
 function updateStatusBar() {
     if (statusBarItem) {
         statusBarItem.dispose(); // Dispose previous item if it exists
         statusBarItem2.dispose();
+        statusBarItem3.dispose();
     }
 
     // Create a new status bar item
@@ -242,6 +252,11 @@ function updateStatusBar() {
     statusBarItem2.text = "Pokemon DS Script Colors";
     statusBarItem2.command = "extension.changeTheme";
     statusBarItem2.show();
+
+    statusBarItem3 = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    statusBarItem3.text = multipleFileOpening ? 'Disable automatic file opening' : 'Enable automatic file opening';
+    statusBarItem3.command = "extension.multipleFileOpening"
+    statusBarItem3.show();
 }
 
 function getSuggestions(input) {
