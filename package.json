@@ -1,0 +1,60 @@
+{
+  "name": "dspre-script-support",
+  "displayName": "DSPRE-Script-Support",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+      "workspace.onDidOpenTextDocument",
+      "languages.registerDocumentLinkProvider",
+      "languages.registerHoverProvider"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [{
+      "command": "extension.openFileAtLine",
+      "title": "Open File at Line"
+      }
+    ],  
+    "languages": [
+        {
+            "id": "customscript",
+            "aliases": ["Custom Script", "customscript"],
+            "extensions": [".script", ".action"],
+            "configuration": "./language-configuration.json"
+        }
+    ],
+    "grammars": [
+        {
+            "language": "customscript",
+            "scopeName": "source.customscript",
+            "path": "./syntaxes/customScript.tmLanguage.json"
+        }
+    ],
+    "themes": [
+        {
+            "label": "Custom Script Theme",
+            "uiTheme": "vs-dark", 
+            "path": "./themes/customScript-color-theme.json"
+        }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.95.0",
+    "@types/mocha": "^10.0.9",
+    "@types/node": "20.x",
+    "eslint": "^9.13.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1"
+  }
+}

@@ -1,0 +1,52 @@
+{
+    "name": "Custom Script Theme",
+    "type": "dark",  // You can also use "light" depending on your preference
+    "colors": {
+        "editor.background": "#1e1e1e",
+        "editor.foreground": "#d4d4d4"
+    },
+    "tokenColors": [
+        {
+            "scope": "entity.name.control.customscript", // Orange
+            "settings": {
+                "foreground": "#d69825"
+            }
+        },
+        {
+            "scope": "constant.numeric.customscript", // Yellow
+            "settings": {
+                "foreground": "#dbdb17"
+            }
+        },
+        {
+            "scope": "constant.numeric.prefixed.customscript", // Green
+            "settings": {
+                "foreground": "#257c25"
+            }
+        },
+        {
+            "scope": "keyword.operator.customscript", // Comparison keywords
+            "settings": {
+                "foreground": "#d69825"
+            }
+        },
+        {
+            "scope": "support.function.cmd.customscript", // CMD_ commands
+            "settings": {
+                "foreground": "#FFFFFF" // White
+            }
+        },
+        {
+            "scope": "text.other.customscript", // Blue
+            "settings": {
+                "foreground": "#7391d3"
+            }
+        },
+        {
+            "scope": "comment.line.double-slash.customscript", // White for comments starting with ##
+            "settings": {
+                "foreground": "#bdbdbd"
+            }
+        }
+    ]
+}
