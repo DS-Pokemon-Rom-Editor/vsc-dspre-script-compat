@@ -57,7 +57,7 @@
         {
             "scope": "comment.line.double-slash.pokemon_ds_action", // White for comments starting with ##
             "settings": {
-                "foreground": "#bdbdbd"
+                "foreground": "#9c9898"
             }
         },
         {
@@ -111,7 +111,7 @@
         {
             "scope": "comment.line.double-slash.pokemon_ds_script", // White for comments starting with ##
             "settings": {
-                "foreground": "#bdbdbd"
+                "foreground": "#9c9898"
             }
         }
     ]

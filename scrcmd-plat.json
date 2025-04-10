@@ -1,6 +1,1006 @@
 {
   "entries": [
     {
+      "name": "LookUp",
+      "id": "0x0000",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "LookDown",
+      "id": "0x0001",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "LookLeft",
+      "id": "0x0002",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "LookRight",
+      "id": "0x0003",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkUpSlow",
+      "id": "0x0004",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkDownSlow",
+      "id": "0x0005",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkLeftSlow",
+      "id": "0x0006",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkRightSlow",
+      "id": "0x0007",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkUp",
+      "id": "0x0008",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkDown",
+      "id": "0x0009",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkLeft",
+      "id": "0x000A",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkRight",
+      "id": "0x000B",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkUpFast",
+      "id": "0x000C",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkDownFast",
+      "id": "0x000D",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkLeftFast",
+      "id": "0x000E",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkRightFast",
+      "id": "0x000F",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkUpVeryFast",
+      "id": "0x0010",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkDownVeryFast",
+      "id": "0x0011",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkLeftVeryFast",
+      "id": "0x0012",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkRightVeryFast",
+      "id": "0x0013",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "RunUp",
+      "id": "0x0014",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "RunDown",
+      "id": "0x0015",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "RunLeft",
+      "id": "0x0016",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "RunRight",
+      "id": "0x0017",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkUpSlowSite",
+      "id": "0x0018",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkDownSlowSite",
+      "id": "0x0019",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkLeftSlowSite",
+      "id": "0x001A",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkRightSlowSite",
+      "id": "0x001B",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkUpSite",
+      "id": "0x001C",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkDownSite",
+      "id": "0x001D",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkLeftSite",
+      "id": "0x001E",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkRightSite",
+      "id": "0x001F",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkUpFastSite",
+      "id": "0x0020",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkDownFastSite",
+      "id": "0x0021",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkLeftFastSite",
+      "id": "0x0022",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkRightFastSite",
+      "id": "0x0023",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkUpVeryFastSite",
+      "id": "0x0024",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkDownVeryFastSite",
+      "id": "0x0025",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkLeftVeryFastSite",
+      "id": "0x0026",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WalkRightVeryFastSite",
+      "id": "0x0027",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "RunUpSite",
+      "id": "0x0028",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "RunDownSite",
+      "id": "0x0029",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "RunLeftSite",
+      "id": "0x002A",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "RunRightSite",
+      "id": "0x002B",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpUpSlow",
+      "id": "0x002C",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpDownSlow",
+      "id": "0x002D",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpLeftSlow",
+      "id": "0x002E",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpRightSlow",
+      "id": "0x002F",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpUpSite",
+      "id": "0x0030",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpDownSite",
+      "id": "0x0031",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpLeftSite",
+      "id": "0x0032",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpRightSite",
+      "id": "0x0033",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpUp",
+      "id": "0x0034",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpDown",
+      "id": "0x0035",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpLeft",
+      "id": "0x0036",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpRight",
+      "id": "0x0037",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpUp2",
+      "id": "0x0038",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpDown2",
+      "id": "0x0039",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpLeft2",
+      "id": "0x003A",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "JumpRight2",
+      "id": "0x003B",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Freeze1",
+      "id": "0x003C",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Freeze2",
+      "id": "0x003D",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Freeze4",
+      "id": "0x003E",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Freeze8",
+      "id": "0x003F",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Freeze15",
+      "id": "0x0040",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Freeze16",
+      "id": "0x0041",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Freeze32",
+      "id": "0x0042",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "TeleportUp",
+      "id": "0x0043",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "TeleportDown",
+      "id": "0x0044",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "DisappearTrue",
+      "id": "0x0045",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "DisappearFalse",
+      "id": "0x0046",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "LockDir",
+      "id": "0x0047",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "ReleaseDir",
+      "id": "0x0048",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "StopAnimation",
+      "id": "0x0049",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "ResumeAnimation",
+      "id": "0x004A",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Exclamation",
+      "id": "0x004B",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitWalkUpSlow",
+      "id": "0x004C",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitWalkDownSlow",
+      "id": "0x004D",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitWalkLeftSlow",
+      "id": "0x004E",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitWalkRightSlow",
+      "id": "0x004F",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitWalkUp",
+      "id": "0x0050",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitWalkDown",
+      "id": "0x0051",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitWalkLeft",
+      "id": "0x0052",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitWalkRight",
+      "id": "0x0053",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitMoveUp",
+      "id": "0x0054",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitMoveDown",
+      "id": "0x0055",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitMoveLeft",
+      "id": "0x0056",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitMoveRight",
+      "id": "0x0057",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitWalkBackUp",
+      "id": "0x0058",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitWalkBackDown",
+      "id": "0x0059",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitWalkBackLeft",
+      "id": "0x005A",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitWalkBackRight",
+      "id": "0x005B",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitJumpLeft1",
+      "id": "0x005C",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitJumpRight1",
+      "id": "0x005D",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitJumpLeft2",
+      "id": "0x005E",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitJumpRight2",
+      "id": "0x005F",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitMoveSite",
+      "id": "0x0064",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitJumpSite",
+      "id": "0x0065",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitDoubleExclamation",
+      "id": "0x0067",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "WaitMoveForever",
+      "id": "0x0068",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Heart",
+      "id": "0x009E",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Smile",
+      "id": "0x009F",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Anger",
+      "id": "0x00A0",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Sad",
+      "id": "0x00A1",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Grin",
+      "id": "0x00A2",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Suspecting",
+      "id": "0x00A3",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "MusicNote",
+      "id": "0x00A4",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Question",
+      "id": "0x00A5",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "BigExclamation",
+      "id": "0x00A6",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Water",
+      "id": "0x00A7",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Exhaust",
+      "id": "0x00A8",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Poison",
+      "id": "0x00A9",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Ellipsis",
+      "id": "0x00AA",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "Asleep",
+      "id": "0x00AB",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "End",
+      "id": "0x00FE",
+      "parameters": [],
+      "description": "",
+      "notes": "",
+      "type": "movement"
+    },
+    {
+      "name": "LESS",
+      "id": "0x0000",
+      "parameters": [],
+      "description": "",
+      "notes":"",
+      "type": "operator"
+    },
+    {
+      "name": "EQUAL",
+      "id": "0x0000",
+      "parameters": [],
+      "description": "",
+      "notes":"",
+      "type": "operator"
+    },
+    {
+      "name": "GREATER",
+      "id": "0x0000",
+      "parameters": [],
+      "description": "",
+      "notes":"",
+      "type": "operator"
+    },
+    {
+      "name": "LESS/EQUAL",
+      "id": "0x0000",
+      "parameters": [],
+      "description": "",
+      "notes":"",
+      "type": "operator"
+    },
+    {
+      "name": "GREATER/EQUAL",
+      "id": "0x0000",
+      "parameters": [],
+      "description": "",
+      "notes":"",
+      "type": "operator"
+    },
+    {
+      "name": "DIFFERENT",
+      "id": "0x0000",
+      "parameters": [],
+      "description": "",
+      "notes":"",
+      "type": "operator"
+    },
+    {
+      "name": "Up",
+      "id": "0x0000",
+      "parameters": [],
+      "description": "",
+      "notes":"",
+      "type": "direction"
+    },
+    {
+      "name": "Down",
+      "id": "0x0000",
+      "parameters": [],
+      "description": "",
+      "notes":"",
+      "type": "direction"
+    },
+    {
+      "name": "Left",
+      "id": "0x0000",
+      "parameters": [],
+      "description": "",
+      "notes":"",
+      "type": "direction"
+    },
+    {
+      "name": "Right",
+      "id": "0x0000",
+      "parameters": [],
+      "description": "",
+      "notes":"",
+      "type": "direction"
+    },
+    {
       "name": "Debug",
       "id": "0x0000",
       "parameters": [

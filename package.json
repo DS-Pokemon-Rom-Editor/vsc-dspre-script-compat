@@ -3,7 +3,7 @@
   "displayName": "DSPRE-Script-Support",
   "publisher": "CorentinMace",
   "description": "",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -34,6 +34,10 @@
       {
         "command": "extension.multipleFileOpening",
         "title": "Enable or Disable the automatic multiple file opening"
+      },
+      {
+        "command": "extension.openScrcmd",
+        "title": "Open scrcmd"
       }
     ],  
     "languages": [
