@@ -3,9 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 
-let currentFile = 'scrcmd-hgss.json'; // Default file
+let currentFile = 'scrcmd-plat.json'; // Default file
 let multipleFileOpening = true;
-
+let entriesCache = null;
 
 function activate(context) {
 
@@ -79,26 +79,47 @@ function activate(context) {
             }
     );
 
-        const hoverProvider = vscode.languages.registerHoverProvider('pokemon_ds_script', {
-            provideHover(document, position) {
-        
-                const numberRange = document.getWordRangeAtPosition(position, /\b(?:0x[0-9A-Fa-f]+|\d+(\.\d+)?)\b/)
-                if (!numberRange) return;
-
-                const number = document.getText(numberRange);
-
-
-                if(number) {
-                    const regHex = new RegExp(/0x[a-fA-F0-9]+/)
-                    if(regHex.test(number)) {
-                        return new vscode.Hover(`Decimal for ${number}: ${hexToDecimal(number)}`)
-                    } else {
-                        return new vscode.Hover(`Hex for ${number}: 0x${decimalToHex(number)}`)
-                    }
-
+    const hoverProvider = vscode.languages.registerHoverProvider('pokemon_ds_script', {
+        provideHover(document, position) {
+            if (!entriesCache) loadEntries();
+            const wordRange = document.getWordRangeAtPosition(position, /\w+/);
+            if (!wordRange) return;
+    
+            const word = document.getText(wordRange);
+            const entry = entriesCache.find(e => e.name === word);
+    
+            if (entry) {
+                let markdown = new vscode.MarkdownString();
+                markdown.appendMarkdown(`🔹 **${entry.name}** [${entry.type}]\n`);
+                markdown.appendMarkdown(`ID: \`${entry.id}\`\n`);
+    
+                if (entry.parameters && entry.parameters.length > 0) {
+                    markdown.appendMarkdown(`**Paramètres :**\n`);
+                    entry.parameters.forEach(param => {
+                        markdown.appendMarkdown(`- ${param}\n`);
+                    });
+                }
+    
+                if (entry.description) {
+                    markdown.appendMarkdown(`\n---\n${entry.description}`);
+                }
+    
+                markdown.supportHtml = false;
+                markdown.isTrusted = true;
+                return new vscode.Hover(markdown);
+            } else {
+                // Gestion des nombres hexadécimaux ou décimaux
+                const regHex = /^0x[a-fA-F0-9]+$/;
+                const regDec = /^\d+$/;
+    
+                if (regHex.test(word)) {
+                    return new vscode.Hover(`Decimal for ${word}: ${hexToDecimal(word)}`);
+                } else if (regDec.test(word)) {
+                    return new vscode.Hover(`Hex for ${word}: 0x${decimalToHex(word)}`);
                 }
             }
-        });
+        }
+    });
 
         const symbol = vscode.languages.registerDocumentSymbolProvider(
             { scheme: 'file', languages: ['pokemon_ds_script', 'pokemon_ds_action'] },
@@ -126,9 +147,12 @@ function activate(context) {
             vscode.window.showInformationMessage(`Theme changed to ${themeName}`);
           });
 
-        let completionProvider = vscode.languages.registerCompletionItemProvider('javascript', {
-            provideCompletionItems
-        }, '.'); 
+          let completionProvider = vscode.languages.registerCompletionItemProvider(
+            'pokemon_ds_script',
+            { provideCompletionItems },
+            '.' // ou un autre déclencheur si nécessaire
+        );
+        
 
         updateStatusBar();
 
@@ -259,38 +283,43 @@ function updateStatusBar() {
     statusBarItem3.show();
 }
 
-function getSuggestions(input) {
+function loadEntries() {
     const filePath = path.join(__dirname, currentFile);
-    let data;
     try {
-        data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        entriesCache = data.entries || [];
     } catch (err) {
         vscode.window.showErrorMessage(`Failed to load ${currentFile}: ${err.message}`);
-        return [];
+        entriesCache = [];
     }
+}
 
-    // Look for keywords or methods matching the input
-    let suggestions = [];
-    Object.keys(data).forEach(key => {
-        suggestions = suggestions.concat(data[key].filter(item => item.startsWith(input)));
-    });
+function getSuggestions(input) {
+    if (!entriesCache) loadEntries();
+    const suggestions = [];
+
+    for (const entry of entriesCache) {
+        if (entry.name.toLowerCase().startsWith(input.toLowerCase())) {
+            const item = new vscode.CompletionItem(entry.name, vscode.CompletionItemKind.Keyword);
+            item.detail = `${entry.id} (${entry.type})`;
+            if (entry.description) item.documentation = entry.description;
+            suggestions.push(item);
+        }
+    }
 
     return suggestions;
 }
 
-// Provide autocompletion
 function provideCompletionItems(document, position) {
-    const input = document.getText(document.getWordRangeAtPosition(position));
-    const suggestions = getSuggestions(input);
-
-    return suggestions.map(suggestion => {
-        return new vscode.CompletionItem(suggestion, vscode.CompletionItemKind.Keyword);
-    });
+    const range = document.getWordRangeAtPosition(position, /\w+/);
+    const input = document.getText(range);
+    return getSuggestions(input);
 }
 
-// Command to change the autocompletion JSON file
+
+
 function changeFile() {
-    vscode.window.showQuickPick(['scrcmd-hgss.json', 'scrcmd-plat.json', 'scrcmd-dp.json'], {
+    vscode.window.showQuickPick(['merged_script_autocomplete_entries.json', 'scrcmd-hgss.json', 'scrcmd-plat.json', 'scrcmd-dp.json'], {
         placeHolder: 'Select the JSON file for autocompletion'
     }).then(selection => {
         if (selection) {
