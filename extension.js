@@ -16,15 +16,23 @@ function activate(context) {
         if (!multipleFileOpening) return;
         const filePath = document.fileName;
         const fileName = path.basename(filePath);
-
+    
         const match = fileName.match(/^(\d{4})_(script|action|func)\b/);
         if (match) {
             const prefix = match[1];
-            await closeAllEditors();
-            await openMatchingFilesSideBySide(prefix);
+            
+            // ✅ Temporarily disable the trigger to avoid recursion
+            multipleFileOpening = false;
+    
+            try {
+                await closeAllEditors();
+                await openMatchingFilesSideBySide(prefix);
+            } finally {
+                // ✅ Re-enable after everything is opened
+                multipleFileOpening = true;
+            }
         }
     });
-
     const disposable = vscode.commands.registerCommand('dspre-script-support.helloWorld', function () {
         vscode.window.showInformationMessage('Hello World from DSPRE-Script-Support!');
     });
@@ -465,7 +473,7 @@ function resolveFilePath(currentFilePath, referencedNumber, refType) {
 let statusBarItem;
 let statusBarItem2;
 let statusBarItem3;
-let statusBarItem4;
+
 
 
 function updateStatusBar() {
@@ -473,7 +481,6 @@ function updateStatusBar() {
         statusBarItem.dispose(); // Dispose previous item if it exists
         statusBarItem2.dispose();
         statusBarItem3.dispose();
-        statusBarItem4.dispose();
     }
 
     // Create a new status bar item
@@ -482,10 +489,10 @@ function updateStatusBar() {
     // statusBarItem.command = 'json-autocompletion.changeFile'; // Command to open file picker
     // statusBarItem.show();
 
-    statusBarItem4 = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-    statusBarItem4.text = "Open scrcmd"
-    statusBarItem4.command = "extension.openScrcmd";
-    statusBarItem4.show();
+    statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    statusBarItem.text = "Open scrcmd"
+    statusBarItem.command = "extension.openScrcmd";
+    statusBarItem.show();
 
 
     statusBarItem2 = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
