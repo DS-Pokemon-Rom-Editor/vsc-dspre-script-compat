@@ -12,27 +12,33 @@ function activate(context) {
     console.log('DSPRE Script Support activated');
 
 
+
     const fileOpenListener = vscode.workspace.onDidOpenTextDocument(async (document) => {
+
+
         if (!multipleFileOpening) return;
+
         const filePath = document.fileName;
+
         const fileName = path.basename(filePath);
-    
+
+
+
         const match = fileName.match(/^(\d{4})_(script|action|func)\b/);
+
         if (match) {
+
             const prefix = match[1];
-            
-            // ✅ Temporarily disable the trigger to avoid recursion
-            multipleFileOpening = false;
-    
-            try {
-                await closeAllEditors();
-                await openMatchingFilesSideBySide(prefix);
-            } finally {
-                // ✅ Re-enable after everything is opened
-                multipleFileOpening = true;
-            }
+
+
+            await closeAllEditors();
+
+            await openMatchingFilesSideBySide(prefix);
+
         }
+
     });
+
     const disposable = vscode.commands.registerCommand('dspre-script-support.helloWorld', function () {
         vscode.window.showInformationMessage('Hello World from DSPRE-Script-Support!');
     });
