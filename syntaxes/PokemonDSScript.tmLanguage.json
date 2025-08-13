@@ -1,89 +1,29 @@
 {
-    "scopeName": "source.pokemon_ds_script",
-    "patterns": [
-        {
-            "name": "entity.name.control.pokemon_ds_action",
-            "match": "\\b(Script|End|Return)\\b"
-        },
-        {
-            "name": "entity.name.func.pokemon_ds_action",
-            "match": "\\b(Function)\\b"
-        },
-        {
-            "name": "entity.name.action.pokemon_ds_action",
-            "match": "\\b(Action)\\b"
-        },
-        {
-            "name": "constant.numeric.pokemon_ds_action", 
-            "match": "\\b(?:0x[0-9A-Fa-f]+|\\d+(\\.\\d+)?)\\b"
-        },
-        {
-            "name": "constant.numeric.prefixed.pokemon_ds_action", 
-            "match": "#\\d+"
-        },
-        {
-            "name": "keyword.operator.pokemon_ds_action", 
-            "match": "\\b(LESS|EQUAL|GREATER|LESS/EQUAL|GREATER/EQUAL|DIFFERENT)\\b"
-        },
-        {
-            "name": "support.function.cmd.pokemon_ds_action", 
-            "match": "\\bCMD_\\d+\\b"
-        },
-        {
-            "name": "text.other.pokemon_ds_action", 
-            "match": "\\b\\w+\\b"
-        },
-        {
-            "name": "comment.line.double-slash.pokemon_ds_action",
-            "begin": "##",
-            "end": "$",
-            "captures": {
-                "0": {
-                    "name": "comment.line.double-slash.pokemon_ds_action"
-                }
-            }
-        },
-        {
-            "name": "entity.name.control.pokemon_ds_script",
-            "match": "\\b(Script|End|Return)\\b"
-        },
-        {
-            "name": "entity.name.func.pokemon_ds_script",
-            "match": "\\b(Function)\\b"
-        },
-        {
-            "name": "entity.name.action.pokemon_ds_script",
-            "match": "\\b(Action)\\b"
-        },
-        {
-            "name": "constant.numeric.pokemon_ds_script", 
-            "match": "\\b(?:0x[0-9A-Fa-f]+|\\d+(\\.\\d+)?)\\b"
-        },
-        {
-            "name": "constant.numeric.prefixed.pokemon_ds_script", 
-            "match": "#\\d+"
-        },
-        {
-            "name": "keyword.operator.pokemon_ds_script", 
-            "match": "\\b(LESS|EQUAL|GREATER|LESS/EQUAL|GREATER/EQUAL|DIFFERENT)\\b"
-        },
-        {
-            "name": "support.function.cmd.pokemon_ds_script", 
-            "match": "\\bCMD_\\d+\\b"
-        },
-        {
-            "name": "text.other.pokemon_ds_script", 
-            "match": "\\b\\w+\\b"
-        },
-        {
-            "name": "comment.line.double-slash.pokemon_ds_script",
-            "begin": "##",
-            "end": "$",
-            "captures": {
-                "0": {
-                    "name": "comment.line.double-slash.pokemon_ds_script"
-                }
-            }
-        }
-    ]
+  "scopeName": "source.pokemon_ds_script",
+  "patterns": [
+    { "name": "entity.name.symbol.pokemon_ds_script", "match": "\\b(?:SEQ_|SPECIES_|ITEM_|MOVE_|TRAINER_)[A-Z0-9_]*\\b" },
+    { "name": "entity.name.control.pokemon_ds_script", "match": "\\b(Script|End|Return)\\b" },
+    { "name": "entity.name.func.pokemon_ds_script", "match": "\\b(Function)\\b" },
+    { "name": "entity.name.action.pokemon_ds_script", "match": "\\b(Action)\\b" },
+    { "name": "constant.numeric.pokemon_ds_script", "match": "\\b(?:0x[0-9A-Fa-f]+|\\d+(\\.\\d+)?)\\b" },
+    { "name": "constant.numeric.prefixed.pokemon_ds_script", "match": "#\\d+" },
+    { "name": "keyword.operator.pokemon_ds_script", "match": "\\b(LESS|EQUAL|GREATER|LESS/EQUAL|GREATER/EQUAL|DIFFERENT)\\b" },
+    { "name": "support.function.cmd.pokemon_ds_script", "match": "\\bCMD_\\d+\\b" },
+    { "name": "comment.line.double-slash.pokemon_ds_script", "begin": "##", "end": "$",
+      "captures": { "0": { "name": "comment.line.double-slash.pokemon_ds_script" } }
+    },
+
+    { "name": "entity.name.control.pokemon_ds_action", "match": "\\b(Script|End|Return)\\b" },
+    { "name": "entity.name.func.pokemon_ds_action", "match": "\\b(Function)\\b" },
+    { "name": "entity.name.action.pokemon_ds_action", "match": "\\b(Action)\\b" },
+    { "name": "constant.numeric.pokemon_ds_action", "match": "\\b(?:0x[0-9A-Fa-f]+|\\d+(\\.\\d+)?)\\b" },
+    { "name": "constant.numeric.prefixed.pokemon_ds_action", "match": "#\\d+" },
+    { "name": "keyword.operator.pokemon_ds_action", "match": "\\b(LESS|EQUAL|GREATER|LESS/EQUAL|GREATER/EQUAL|DIFFERENT)\\b" },
+    { "name": "support.function.cmd.pokemon_ds_action", "match": "\\bCMD_\\d+\\b" },
+    { "name": "comment.line.double-slash.pokemon_ds_action", "begin": "##", "end": "$",
+      "captures": { "0": { "name": "comment.line.double-slash.pokemon_ds_action" } }
+    },
+
+    { "name": "text.other.pokemon_ds_script", "match": "\\b\\w+\\b" }
+  ]
 }

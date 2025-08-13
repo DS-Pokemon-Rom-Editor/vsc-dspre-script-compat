@@ -91,6 +91,12 @@
             }
         },
         {
+            "scope": "entity.name.symbol.pokemon_ds_script", // Orange
+            "settings": {
+                "foreground": "#d69825"
+            }
+        },
+        {
             "scope": "keyword.operator.pokemon_ds_script", // Comparison keywords
             "settings": {
                 "foreground": "#d69825"

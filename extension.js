@@ -1,42 +1,63 @@
+/* eslint-disable */
 const vscode = require('vscode');
 const fs = require('fs');
 const path = require('path');
 
+// ---------------------------
+// PERSISTENCE / STATE
+// ---------------------------
+let extensionContext; // defined in activate()
 
-let currentFile = 'scrcmd-plat.json';
+const STORAGE_KEYS = {
+    FILES: 'jsonAuto.files',        // string[]: paths to JSON (absolute or relative to the extension)
+    CURRENT: 'jsonAuto.currentFile' // string  : path to the selected JSON
+};
+
+// Built-in files (relative to the extension folder)
+const BUILTIN_FILES = [
+    'scrcmd-hgss.json',
+    'scrcmd-plat.json',
+    'scrcmd-dp.json'
+];
+
+// Currently selected file used for autocompletion / hover / panel
+let currentFile = null;
+
 let multipleFileOpening = true;
+
+// Cache of entries in the unified format: { name, id, parameters, description, notes, type }[]
 let entriesCache = null;
 
+// ---------------------------
+/** ACTIVATION */
+// ---------------------------
 function activate(context) {
+    extensionContext = context;
 
     console.log('DSPRE Script Support activated');
 
+    // Load the list of available JSON files + restore the last selected one
+    let availableJsonFiles = readPersistedFiles();
+    currentFile = readCurrentFile() || availableJsonFiles[0];
+    persistCurrentFile(currentFile);
+    loadEntries();
+    updateStatusBar();
 
-
+    // ---------------------------
+    // Listeners and Providers
+    // ---------------------------
     const fileOpenListener = vscode.workspace.onDidOpenTextDocument(async (document) => {
-
-
         if (!multipleFileOpening) return;
 
         const filePath = document.fileName;
-
         const fileName = path.basename(filePath);
-
-
-
         const match = fileName.match(/^(\d{4})_(script|action|func)\b/);
 
         if (match) {
-
             const prefix = match[1];
-
-
             await closeAllEditors();
-
             await openMatchingFilesSideBySide(prefix);
-
         }
-
     });
 
     const disposable = vscode.commands.registerCommand('dspre-script-support.helloWorld', function () {
@@ -93,7 +114,7 @@ function activate(context) {
         }
     );
 
-    const hoverProvider = vscode.languages.registerHoverProvider('pokemon_ds_script', {
+    const hoverProvider = vscode.languages.registerHoverProvider(['pokemon_ds_script', 'pokemon_ds_action'], {
         provideHover(document, position) {
             if (!entriesCache) loadEntries();
             const wordRange = document.getWordRangeAtPosition(position, /\w+/);
@@ -108,7 +129,7 @@ function activate(context) {
                 markdown.appendMarkdown(`ID: \`${entry.id}\`\n`);
 
                 if (entry.parameters && entry.parameters.length > 0) {
-                    markdown.appendMarkdown(`**Parameters :**\n`);
+                    markdown.appendMarkdown(`\n**Parameters:**\n`);
                     entry.parameters.forEach(param => {
                         markdown.appendMarkdown(`- ${param}\n`);
                     });
@@ -122,7 +143,7 @@ function activate(context) {
                 markdown.isTrusted = true;
                 return new vscode.Hover(markdown);
             } else {
-                // Gestion des nombres hexadécimaux ou décimaux
+                // Handles hexadecimal or decimal numbers
                 const regHex = /^0x[a-fA-F0-9]+$/;
                 const regDec = /^\d+$/;
 
@@ -140,46 +161,123 @@ function activate(context) {
         new PokemonDSScriptSymbolProvider()
     );
 
-    let changeFileCommand = vscode.commands.registerCommand('json-autocompletion.changeFile', changeFile);
-
+    // Toggle automatic multiple file opening
     let multipleFileOpeningCommand = vscode.commands.registerCommand('extension.multipleFileOpening', function () {
         multipleFileOpening = !multipleFileOpening;
         updateStatusBar();
     });
 
-    let openPanelCommand = vscode.commands.registerCommand('extension.openScrcmd', displayScrcmd)
+    // Open panel
+    let openPanelCommand = vscode.commands.registerCommand('extension.openScrcmd', displayScrcmd);
 
+    // Change theme
     const changeThemeCommand = vscode.commands.registerCommand('extension.changeTheme', async () => {
-        // Define the theme name you want to set
         const themeName = "Custom Script Theme";
-
-        // Update the color theme setting
         await vscode.workspace.getConfiguration().update(
             'workbench.colorTheme',
             themeName,
             vscode.ConfigurationTarget.Workspace
         );
-
         vscode.window.showInformationMessage(`Theme changed to ${themeName}`);
     });
 
+    // Completion providers
     let scriptCompletionProvider = vscode.languages.registerCompletionItemProvider(
         'pokemon_ds_script',
         { provideCompletionItems },
-        '.' // ou un autre déclencheur si nécessaire
+        '.'
     );
-
     let actionCompletionProvider = vscode.languages.registerCompletionItemProvider(
         'pokemon_ds_action',
         { provideCompletionItems },
-        '.' // ou un autre déclencheur si nécessaire
+        '.'
     );
 
+    // --------- JSON commands: change / add -----------
+    // Replace the old changeFile command with a persistent version
+    let changeFileCommand = vscode.commands.registerCommand('json-autocompletion.changeFile', async () => {
+        const savedList = readPersistedFiles();
+
+        const pick = await vscode.window.showQuickPick(
+            savedList.map(f => ({
+                label: path.basename(f),
+                description: path.isAbsolute(f) ? f : `(builtin) ${f}`,
+                value: f
+            })),
+            { placeHolder: 'Select the JSON file for autocompletion' }
+        );
+
+        if (pick) {
+            currentFile = pick.value;
+            await persistCurrentFile(currentFile);
+            loadEntries();
+            vscode.window.showInformationMessage(`Autocompletion file changed to ${path.basename(currentFile)}`);
+            updateStatusBar();
+        }
+    });
+
+    // Add a user JSON
+    let addFileCommand = vscode.commands.registerCommand('json-autocompletion.addFile', async () => {
+        const uris = await vscode.window.showOpenDialog({
+            canSelectMany: false,
+            openLabel: 'Add JSON for autocompletion',
+            filters: { 'JSON': ['json'] }
+        });
+
+        if (!uris || uris.length === 0) return;
+        const filePath = uris[0].fsPath;
+
+        try {
+            const data = loadJsonFile(filePath);
+            const normalized = normalizeEntries(data);
+            if (!Array.isArray(normalized) || normalized.length === 0) {
+                const choice = await vscode.window.showWarningMessage(
+                    'JSON loaded but produced no entries. Add anyway?',
+                    'Yes', 'No'
+                );
+                if (choice !== 'Yes') return;
+            }
+        } catch (err) {
+            vscode.window.showErrorMessage(`Failed to read JSON: ${err.message}`);
+            return;
+        }
+
+        const list = readPersistedFiles();
+        if (!list.includes(filePath)) {
+            list.push(filePath);
+            await persistFiles(list);
+        }
+
+        currentFile = filePath;
+        await persistCurrentFile(currentFile);
+        loadEntries();
+        vscode.window.showInformationMessage(`Added and selected: ${filePath}`);
+        updateStatusBar();
+    });
+
+    // Initial status bar (already called earlier for cold start display)
     updateStatusBar();
 
-    context.subscriptions.push(disposable, fileOpenListener, hoverProvider, provider, symbol, openPanelCommand, changeFileCommand, scriptCompletionProvider, actionCompletionProvider, statusBarItem, changeThemeCommand, multipleFileOpeningCommand);
+    // Subscriptions
+    context.subscriptions.push(
+        disposable,
+        fileOpenListener,
+        hoverProvider,
+        provider,
+        symbol,
+        openPanelCommand,
+        changeFileCommand,
+        addFileCommand,
+        scriptCompletionProvider,
+        actionCompletionProvider,
+        changeThemeCommand,
+        multipleFileOpeningCommand
+    );
 }
 
+// ---------------------------
+/** WEBVIEW (Panel) */
+// ---------------------------
 function displayScrcmd() {
     if (!entriesCache) loadEntries();
 
@@ -192,9 +290,7 @@ function displayScrcmd() {
         }
     );
 
-
     panel.webview.html = getWebviewContent(entriesCache);
-
 }
 
 function getWebviewContent(data) {
@@ -210,7 +306,7 @@ function getWebviewContent(data) {
           font-family: sans-serif;
           padding: 1rem;
           background-color: #1e1e1e;
-          color: white;
+          color: white.
         }
         input#globalSearch {
           margin-bottom: 1rem;
@@ -291,9 +387,9 @@ function getWebviewContent(data) {
             row.innerHTML = \`
               <td class="small">\${item.id}</td>
               <td>\${item.name}</td>
-              <td>\${item.parameters}</td>
+              <td>\${Array.isArray(item.parameters) ? item.parameters.join(', ') : (item.parameters ?? '')}</td>
               <td>\${item.description}</td>
-              <td>\${item.notes}</td>
+              <td>\${item.notes ?? ''}</td>
               <td class="small">\${item.type}</td>
             \`;
             tableBody.appendChild(row);
@@ -344,19 +440,16 @@ function getWebviewContent(data) {
           refreshView();
         }
   
-        // Scroll handler
         window.addEventListener('scroll', () => {
           if (isNearBottom() && renderedCount < filteredData.length) {
             renderBatch();
           }
         });
   
-        // Global search input
         globalSearch.addEventListener('input', () => {
           applyGlobalSearch();
         });
   
-        // Sorting headers
         document.querySelectorAll('th[data-key]').forEach(th => {
           th.addEventListener('click', () => {
             const key = th.dataset.key;
@@ -374,7 +467,6 @@ function getWebviewContent(data) {
           });
         });
   
-        // Initial render
         refreshView();
       </script>
     </body>
@@ -382,7 +474,9 @@ function getWebviewContent(data) {
     `;
 }
 
-
+// ---------------------------
+/** GLOBAL UTILS */
+// ---------------------------
 function hexToDecimal(hex) {
     return parseInt(hex, 16);
 }
@@ -463,72 +557,226 @@ function resolveFilePath(currentFilePath, referencedNumber, refType) {
         return null;
     }
 
-    const filePath = path.join(vscode.workspace.rootPath, refFile);
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    const rootDir = workspaceFolders && workspaceFolders.length > 0
+        ? workspaceFolders[0].uri.fsPath
+        : vscode.workspace.rootPath || path.dirname(currentFilePath); // fallback
 
+    const filePath = path.join(rootDir, refFile);
     if (fs.existsSync(filePath)) {
         return filePath;
     }
-
     return null;
 }
 
-/*
-    AUTOCOMPLETE
-*/
-
+// ---------------------------
+/** STATUS BAR */
+// ---------------------------
 let statusBarItem;
 let statusBarItem2;
 let statusBarItem3;
-
-
+let statusBarItem4; // current JSON
+let statusBarItem5; // Add JSON
 
 function updateStatusBar() {
     if (statusBarItem) {
-        statusBarItem.dispose(); // Dispose previous item if it exists
-        statusBarItem2.dispose();
-        statusBarItem3.dispose();
+        try { statusBarItem.dispose(); } catch {}
+    }
+    if (statusBarItem2) {
+        try { statusBarItem2.dispose(); } catch {}
+    }
+    if (statusBarItem3) {
+        try { statusBarItem3.dispose(); } catch {}
+    }
+    if (statusBarItem4) {
+        try { statusBarItem4.dispose(); } catch {}
+    }
+    if (statusBarItem5) {
+        try { statusBarItem5.dispose(); } catch {}
     }
 
-    // Create a new status bar item
-    // statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-    // statusBarItem.text = `Autocompletion: ${currentFile}`;
-    // statusBarItem.command = 'json-autocompletion.changeFile'; // Command to open file picker
-    // statusBarItem.show();
-
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-    statusBarItem.text = "Open scrcmd"
+    statusBarItem.text = "Open scrcmd";
     statusBarItem.command = "extension.openScrcmd";
     statusBarItem.show();
 
-
-    statusBarItem2 = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    statusBarItem2 = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 99);
     statusBarItem2.text = "Pokemon DS Script Colors";
     statusBarItem2.command = "extension.changeTheme";
     statusBarItem2.show();
 
-    statusBarItem3 = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    statusBarItem3 = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 98);
     statusBarItem3.text = multipleFileOpening ? 'Disable automatic file opening' : 'Enable automatic file opening';
-    statusBarItem3.command = "extension.multipleFileOpening"
+    statusBarItem3.command = "extension.multipleFileOpening";
     statusBarItem3.show();
+
+    statusBarItem4 = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 97);
+    statusBarItem4.text = `JSON: ${currentFile ? path.basename(currentFile) : 'None'}`;
+    statusBarItem4.tooltip = currentFile || '';
+    statusBarItem4.command = 'json-autocompletion.changeFile';
+    statusBarItem4.show();
+
+    statusBarItem5 = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 96);
+    statusBarItem5.text = 'Add JSON';
+    statusBarItem5.command = 'json-autocompletion.addFile';
+    statusBarItem5.show();
+}
+
+// ---------------------------
+/** LOADING JSON (old/new format) */
+// ---------------------------
+function resolveJsonPath(candidate) {
+    if (path.isAbsolute(candidate)) return candidate;
+    return path.join(__dirname, candidate);
+}
+
+function loadJsonFile(jsonPath) {
+    const realPath = resolveJsonPath(jsonPath);
+    const raw = fs.readFileSync(realPath, 'utf8');
+    return JSON.parse(raw);
+}
+
+/**
+ * old format -> entries[]
+ * old: { entries: [ { name, id, parameters, description, notes, type }, ... ] }
+ * (already has movements, operators, directions, commands, etc.)  :contentReference[oaicite:2]{index=2}
+ */
+function normalizeOldFormat(obj) {
+    const entries = Array.isArray(obj.entries) ? obj.entries : [];
+    return entries;
+}
+
+/**
+ * new format -> entries[]
+ * new: {
+ *   movements: { "0x..": { name, decomp_name, description } },
+ *   comparisonOperators: { "0x..": "LESS" },
+ *   overworldDirections: { "0x..": "Up" },
+ *   specialOverworlds: { "0x..": "Player" },
+ *   scrcmd: { "0x..": { name, parameter_values[], description, ... } }
+ * }  :contentReference[oaicite:3]{index=3}
+ */
+function normalizeNewFormat(obj) {
+    const out = [];
+
+    // movements -> movement
+    if (obj.movements && typeof obj.movements === 'object') {
+        for (const [id, v] of Object.entries(obj.movements)) {
+            out.push({
+                name: v?.name ?? '',
+                id,
+                parameters: [],
+                description: v?.description ?? '',
+                notes: '',
+                type: 'movement'
+            });
+        }
+    }
+
+    // comparisonOperators -> operator
+    if (obj.comparisonOperators && typeof obj.comparisonOperators === 'object') {
+        for (const [id, name] of Object.entries(obj.comparisonOperators)) {
+            out.push({
+                name: String(name ?? ''),
+                id,
+                parameters: [],
+                description: '',
+                notes: '',
+                type: 'operator'
+            });
+        }
+    }
+
+    // overworldDirections -> direction
+    if (obj.overworldDirections && typeof obj.overworldDirections === 'object') {
+        for (const [id, name] of Object.entries(obj.overworldDirections)) {
+            out.push({
+                name: String(name ?? ''),
+                id,
+                parameters: [],
+                description: '',
+                notes: '',
+                type: 'direction'
+            });
+        }
+    }
+
+    // specialOverworlds -> specialOverworld
+    if (obj.specialOverworlds && typeof obj.specialOverworlds === 'object') {
+        for (const [id, name] of Object.entries(obj.specialOverworlds)) {
+            out.push({
+                name: String(name ?? ''),
+                id,
+                parameters: [],
+                description: '',
+                notes: '',
+                type: 'specialOverworld'
+            });
+        }
+    }
+
+    // scrcmd -> command (reprendre parameter_values si dispo)
+    if (obj.scrcmd && typeof obj.scrcmd === 'object') {
+        for (const [id, cmd] of Object.entries(obj.scrcmd)) {
+            const params =
+                Array.isArray(cmd?.parameter_values) ? cmd.parameter_values.map(String) :
+                Array.isArray(cmd?.parameters) ? cmd.parameters.map(String) :
+                [];
+
+            out.push({
+                name: cmd?.name ?? '',
+                id,
+                parameters: params,
+                description: cmd?.description ?? '',
+                notes: '',
+                type: 'command'
+            });
+        }
+    }
+
+    return out;
+}
+
+/** Detect the format the return the entries[] */
+function normalizeEntries(obj) {
+    if (obj && typeof obj === 'object') {
+        if (Array.isArray(obj.entries)) return normalizeOldFormat(obj);
+        // new format (sections)
+        if (
+            obj.movements || obj.scrcmd ||
+            obj.comparisonOperators || obj.overworldDirections || obj.specialOverworlds
+        ) {
+            return normalizeNewFormat(obj);
+        }
+    }
+    return [];
 }
 
 function loadEntries() {
-    const filePath = path.join(__dirname, currentFile);
+    if (!currentFile) {
+        entriesCache = [];
+        return;
+    }
+
     try {
-        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-        entriesCache = data.entries || [];
+        const data = loadJsonFile(currentFile);
+        entriesCache = normalizeEntries(data);
+        if (!Array.isArray(entriesCache)) entriesCache = [];
     } catch (err) {
         vscode.window.showErrorMessage(`Failed to load ${currentFile}: ${err.message}`);
         entriesCache = [];
     }
 }
 
+// ---------------------------
+/** AUTOCOMPLETE */
+// ---------------------------
 function getSuggestions(input) {
     if (!entriesCache) loadEntries();
     const suggestions = [];
 
     for (const entry of entriesCache) {
-        if (entry.name.toLowerCase().startsWith(input.toLowerCase())) {
+        if (entry.name && entry.name.toLowerCase().startsWith(input.toLowerCase())) {
             const item = new vscode.CompletionItem(entry.name, vscode.CompletionItemKind.Keyword);
             item.detail = `${entry.id} (${entry.type})`;
             if (entry.description) item.documentation = entry.description;
@@ -541,26 +789,13 @@ function getSuggestions(input) {
 
 function provideCompletionItems(document, position) {
     const range = document.getWordRangeAtPosition(position, /\w+/);
-    const input = document.getText(range);
+    const input = range ? document.getText(range) : '';
     return getSuggestions(input);
 }
 
-function changeFile() {
-    vscode.window.showQuickPick(['scrcmd-hgss.json', 'scrcmd-plat.json', 'scrcmd-dp.json'], {
-        placeHolder: 'Select the JSON file for autocompletion'
-    }).then(selection => {
-        if (selection) {
-            currentFile = selection;
-            vscode.window.showInformationMessage(`Autocompletion file changed to ${currentFile}`);
-            updateStatusBar();
-        }
-    });
-}
-
-/*
-    OUTLINE
-*/
-
+// ---------------------------
+/** OUTLINE */
+// ---------------------------
 class PokemonDSScriptSymbolProvider {
     provideDocumentSymbols(document) {
         const symbols = [];
@@ -611,11 +846,33 @@ class PokemonDSScriptSymbolProvider {
     }
 }
 
+// ---------------------------
+/** PERSISTENCE HELPERS */
+// ---------------------------
+function readPersistedFiles() {
+    const saved = extensionContext.globalState.get(STORAGE_KEYS.FILES);
+    if (Array.isArray(saved) && saved.length > 0) return saved;
+    return [...BUILTIN_FILES];
+}
 
-// This method is called when your extension is deactivated
+function persistFiles(files) {
+    return extensionContext.globalState.update(STORAGE_KEYS.FILES, files);
+}
+
+function readCurrentFile() {
+    return extensionContext.globalState.get(STORAGE_KEYS.CURRENT);
+}
+
+function persistCurrentFile(file) {
+    return extensionContext.globalState.update(STORAGE_KEYS.CURRENT, file);
+}
+
+// ---------------------------
+/** DEACTIVATION */
+// ---------------------------
 function deactivate() { }
 
 module.exports = {
     activate,
     deactivate
-}
+};
