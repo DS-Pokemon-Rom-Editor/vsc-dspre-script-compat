@@ -73,13 +73,6 @@
           "scopeName": "source.pokemon_ds_script",
           "path": "./syntaxes/PokemonDSScript.tmLanguage.json"
       }
-    ],
-    "themes": [
-        {
-            "label": "Custom Script Theme",
-            "uiTheme": "vs-dark", 
-            "path": "./themes/PokemonDSScript-color-theme.json"
-        }
     ]
   },
   "configuration": {

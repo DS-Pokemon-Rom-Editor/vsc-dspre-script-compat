@@ -39,3 +39,9 @@ Initial release
 ### 1.0.4
 
 - Fixed a bug where Action files couldn't parse the outlines
+
+### 1.1
+
+- added codelens, command signature helper, ctrl-click to jump
+- handles everything in one file now
+- better theming
