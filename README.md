@@ -5,13 +5,11 @@ DSPRE Script Support handles the .script and .action files for Pokemon DS Script
 
 ## Features
 
-- Opens all 3 related files when opening one of them (XXXX_script, XXXX_func, XXXX_action)
 - Ctrl+Click to related Functions and Actions
 - Outlines for Script, Function and Action
+- CodeLens for tracking references
 - Syntax Color & Icons
 - Automatic conversion from Hex to Dec, and Dec to Hex on number hover
-
-Coming soon: 
 - Autocomplete from json scrcmd
 
 ## Known Issues
@@ -40,7 +38,7 @@ Initial release
 
 - Fixed a bug where Action files couldn't parse the outlines
 
-### 1.1
+### 2.0
 
 - added codelens, command signature helper, ctrl-click to jump
 - handles everything in one file now
